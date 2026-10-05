@@ -1,3 +1,12 @@
+# API
 fastapi==0.141.1
 pydantic==2.13.5
 pytest==9.1.1
+uvicorn==0.54.0
+
+# Testing
+
+# Data science
+pandas==3.0.6
+numpy==2.5.3
+scikit-learn
