@@ -1,1700 +1,540 @@
 # CyberShield-Auto
 
-## Project Tille
+## Autonomous cyber threat detection, investigation, response, and verification
 
-**CyberShield-Auto: AI-Powerd Intellingent Cyber Threat Detection And Response Platform**
+| Field                     | Description                                                                 |
+| ------------------------- | --------------------------------------------------------------------------- |
+| Project name              | CyberShield-Auto                                                            |
+| Category                  | Cybersecurity, threat detection, AI agents, and automated incident response |
+| Initial platform          | Windows                                                                     |
+| Primary language          | Python                                                                      |
+| Development approach      | Documentation-first, modular architecture, test-driven development          |
+| Project phase             | Planning and documentation                                                  |
+| Network detection dataset | CICIDS2017                                                                  |
+| Initial operating model   | Local endpoint with controlled response policies                            |
 
-## Project Description
+## 1. Project overview
 
-CyberShield-Auto is a cybersecurity platform designed to detect potential cyber threats from collected system or network data and assist with an appropriate response.
+CyberShield-Auto is a planned defensive cybersecurity application that will detect suspicious activity, investigate potential threats, assess risk, and support authorized responses.
 
-The project combines Python-based data processing, machine learning, API-based data collection, and automated response mechanisms. Incoming data is first validated and prepared for analysis. The detection module then examines the available features to identify patterns that may indicate suspicious or malicious activity.
+The project aims to connect event monitoring, threat detection, incident investigation, response authorization, verification, and alerting in one application.
 
-When a potential threat is detected, the system can generate an alert and pass the result to the response module. The response process is intended to support actions such as recording the event, notifying the user, or applying a predefined response.
+The first version will focus on a single Windows computer. Development will begin with controlled test data and deterministic detection rules. Additional capabilities will be introduced as the core workflow is implemented and tested.
 
-The project will be developed as separate modules so that data collection, validation, preprocessing, threat detection, response, monitoring, and the dashboard can be developed and tested independently.
+The project will use CICIDS2017 to develop and evaluate network intrusion detection. Additional synthetic events or suitable Windows telemetry will be needed to test endpoint-specific capabilities such as process monitoring, file activity, and authentication events.
 
+AI-assisted investigation may be added to explain findings and summarize evidence. The AI component will not have independent authority to execute system commands or approve its own recommendations.
 
-## Problem Statement
+The central workflow is:
 
-Cyber threats can generate large amounts of system and network data, making it difficult to manually identify suspicious activity in a timely manner. Traditional monitoring approaches may also require continuous human attention and predefined rules for known threat patterns.
+1. Collect security-relevant events.
+2. Validate and normalize the event data.
+3. Detect suspicious patterns.
+4. Gather and correlate supporting evidence.
+5. Assess severity and confidence.
+6. Evaluate proposed responses against explicit security policies.
+7. Execute permitted actions when the required conditions are met.
+8. Verify the outcome.
+9. Notify the user and update the incident record.
 
-CyberShield-Auto aims to address this problem by developing a system that can collect relevant security data, validate and process it, analyze patterns using machine learning, and identify potentially suspicious activity.
+The system must distinguish a detected threat from a successful response and a verified resolution.
 
-The project also aims to connect threat detection with alert and response mechanisms so that detected events can be handled through a defined workflow instead of stopping at detection alone.
-## Objectives
+## 2. Problem statement
 
-The main objectives of CyberShield-Auto are:
+Security monitoring can produce large amounts of information without giving users a clear understanding of which events matter or what to do next.
 
-1. Develop a modular cybersecurity platform for collecting and analyzing security-related data.
+CyberShield-Auto addresses several related problems.
 
-2. Build an API layer for receiving structured security data from external sources.
+### 2.1 Delayed detection
 
-3. Validate incoming data before processing it using appropriate validation techniques.
+Suspicious activity can go unnoticed when relevant events are not collected or analyzed promptly.
 
-4. Develop preprocessing and feature engineering steps to prepare data for threat detection.
+The application should process supported events efficiently and identify documented threat patterns.
 
-5. Apply machine learning techniques to identify patterns associated with potentially suspicious activity.
+### 2.2 Limited investigation
 
-6. Generate alerts when the system detects a potential threat.
+An individual alert may not provide enough context to explain what happened or how serious the incident is.
 
-7. Develop a response module that can perform predefined actions based on detected threats.
+CyberShield-Auto should associate findings with available evidence and related events.
 
-8. Provide monitoring and dashboard components to help users understand detected security events.
+### 2.3 Manual response
 
-9. Use automated testing and modular development practices to improve the reliability and maintainability of the system.
+Investigating and responding to an incident can require several manual steps.
 
-10. Maintain clear documentation throughout development so that each component can be understood, tested, and extended independently.
+The application aims to automate selected defensive actions when its policies, evidence requirements, and authorization checks permit them.
 
+### 2.4 Inconsistent risk assessment
 
-## Proposed Solution
+Different events carry different levels of risk. An unusual process does not necessarily indicate malware, and a high-impact event may still have uncertain classification.
 
-CyberShield-Auto will use a modular pipeline to process security-related data and identify potential threats.
+The application should evaluate severity and confidence separately and consider uncertainty before recommending a response.
 
-The proposed workflow is:
+### 2.5 Unverified remediation
 
-1. **Data Collection**
-   Collect security-related data from APIs, system sources, or other supported inputs.
+Executing an action does not prove that the threat has been removed.
 
-2. **Data Validation**
-   Validate incoming data to ensure that it follows the expected structure and data types.
+CyberShield-Auto should check the relevant system state and report whether the action succeeded, failed, or could not be verified.
 
-3. **Data Preprocessing**
-   Clean and transform the validated data into a format suitable for analysis.
+### 2.6 Risks from automation
 
-4. **Feature Engineering**
-   Extract and create relevant features that can help the detection system identify suspicious patterns.
+Incorrect automated actions can interrupt legitimate processes, damage data, or disrupt network access.
 
-5. **Threat Detection**
-   Use machine learning and rule-based techniques to analyze the processed data and identify potential threats.
+The response system must therefore use explicit authorization rules, restricted operations, audit records, and an emergency stop.
 
-6. **Alert Generation**
-   Generate an alert when suspicious activity is detected and record the relevant event information.
+## 3. Vision and objectives
 
-7. **Response**
-   Pass detected threats to the response module, where predefined actions can be applied according to the type and severity of the event.
+The project aims to build a modular defensive security application that helps users understand suspicious activity and respond to threats within clearly defined limits.
 
-8. **Monitoring and Dashboard**
-   Present security events, alerts, and detection results through a monitoring interface.
+### 3.1 Primary objectives
 
-This architecture allows each stage to be developed, tested, and improved independently while maintaining a clear flow from data collection to threat response.
+CyberShield-Auto is intended to:
 
-## Core Features
+* Collect selected security-relevant events.
+* Validate and normalize incoming data.
+* Detect documented suspicious patterns.
+* Evaluate network traffic using the selected detection approach.
+* Investigate findings using available evidence.
+* Correlate related observations into incidents.
+* Assign severity and confidence.
+* Evaluate proposed actions through a policy engine.
+* Execute permitted defensive actions.
+* Verify response outcomes.
+* Display alerts and incident history.
+* Maintain audit records.
+* Provide a dashboard for monitoring and investigation.
+* Support automated testing throughout development.
 
-CyberShield-Auto will include the following core features:
+These are project objectives. Each capability must be implemented and tested before it can be considered complete.
 
-- **Security Data Collection:** Receive security-related data through APIs and supported input sources.
+### 3.2 Future objectives
 
-- **Data Validation:** Validate incoming data before it enters the processing pipeline.
+Potential future improvements include:
 
-- **Data Preprocessing:** Clean, transform, and prepare collected data for analysis.
+* Machine-learning-based anomaly detection.
+* AI-assisted incident summaries.
+* Threat intelligence enrichment.
+* Advanced event correlation.
+* Additional Windows event sources.
+* Centralized monitoring of multiple authorized computers.
+* Historical incident analytics.
+* Automated security reports.
+* Support for additional operating systems.
 
-- **Feature Engineering:** Create useful features from security data to improve threat detection.
+These capabilities are subject to implementation priorities and further design review.
 
-- **Threat Detection:** Analyze security events using machine learning and rule-based detection methods.
+## 4. Target users
 
-- **Threat Classification:** Classify detected events according to the categories supported by the detection system.
+The initial project is intended for:
 
-- **Alert Generation:** Generate alerts when potentially suspicious activity is identified.
+### Individual computer users
 
-- **Automated Response:** Execute predefined response actions for supported threat conditions.
+Users who want greater visibility into suspicious activity on their own computers.
 
-- **Event Logging:** Store relevant information about detected events, alerts, and responses.
+### Students and cybersecurity researchers
 
-- **Monitoring Dashboard:** Provide a dashboard for viewing security events, detection results, and alerts.
-
-- **Testing:** Include automated tests for important components of the system.
-
-## Technology Stack
-
-CyberShield-Auto will use a modular technology stack covering the application layer, cybersecurity data processing, machine learning, storage, observability, testing, and deployment.
-
-| Category                            | Technology                                    |
-| ----------------------------------- | --------------------------------------------- |
-| Programming Language                | Python, TypeScript                            |
-| Frontend                            | React                                         |
-| Frontend Build Tool                 | Vite                                          |
-| Backend API                         | FastAPI                                       |
-| API Validation                      | Pydantic                                      |
-| API Documentation                   | OpenAPI / Swagger                             |
-| Data Processing                     | Pandas, NumPy                                 |
-| Machine Learning                    | Scikit-learn, XGBoost, LightGBM               |
-| ML Experiment Tracking              | MLflow                                        |
-| Model Registry                      | MLflow Model Registry                         |
-| Database                            | PostgreSQL                                    |
-| Caching / Task Support              | Redis                                         |
-| Event Streaming                     | Apache Kafka                                  |
-| Security Data Sources               | APIs, system logs, network/security telemetry |
-| Network Security Telemetry          | Zeek / Suricata                               |
-| Log Management                      | OpenSearch                                    |
-| Metrics                             | Prometheus                                    |
-| Visualization / Monitoring          | Grafana                                       |
-| Application Observability           | OpenTelemetry                                 |
-| Authentication / Authorization      | OAuth 2.0 / OpenID Connect                    |
-| Testing                             | pytest, React Testing Library                 |
-| API Testing                         | Postman / automated API tests                 |
-| Version Control                     | Git                                           |
-| Code Hosting                        | GitHub                                        |
-| Containerization                    | Docker                                        |
-| Container Orchestration             | Kubernetes                                    |
-| CI/CD                               | GitHub Actions                                |
-| Infrastructure as Code              | Terraform                                     |
-| Reverse Proxy / Ingress             | Nginx                                         |
-| Development Environment             | VS Code, WSL2, Ubuntu                         |
-| Dependency / Environment Management | Python virtual environment, npm               |
-| Security Standards                  | OWASP ASVS, OWASP API Security Top 10         |
-| Cybersecurity Framework             | NIST Cybersecurity Framework 2.0              |
+Users who want to study threat detection, network traffic analysis, incident investigation, and defensive automation in a controlled environment.
 
-### Technology Selection Approach
+### Developers and security engineers
 
-The system will use different technologies for different responsibilities rather than depending on a single framework.
+Users who want to extend detection rules, test security policies, and evaluate response reliability.
 
-React and TypeScript will provide the web interface, while FastAPI and Pydantic will handle backend APIs and request validation. PostgreSQL will provide persistent application data storage.
+### Small organizations
 
-For threat detection, Scikit-learn will provide baseline models and preprocessing utilities, while XGBoost and LightGBM will be evaluated for tabular cybersecurity datasets. The final model will be selected using experimental results and security-relevant evaluation metrics rather than assuming that one algorithm is always superior.
+Organizations may be considered in a future version that supports centralized management of authorized endpoints.
 
-MLflow will be used for experiment tracking and model lifecycle management. Its Model Registry provides model versioning, lineage, metadata, and controlled promotion between environments.
+Enterprise-scale management is outside the initial scope.
 
-For security telemetry, the platform can integrate with sources such as system logs, APIs, Zeek, and Suricata. Kafka can be introduced when the system needs continuous event streaming and asynchronous processing.
+## 5. Project scope
 
-Prometheus, Grafana, and OpenTelemetry will provide application and infrastructure observability. OpenTelemetry supports vendor-neutral collection of traces, metrics, and logs, while Grafana can use Prometheus data for monitoring and alerting.
+### 5.1 Initial scope
 
-Docker will provide reproducible application environments. Kubernetes and Terraform will be introduced when the deployment architecture requires container orchestration and infrastructure automation.
+The initial release will focus on one Windows computer and a modular Python application.
 
-Security requirements will be guided by OWASP application and API security practices and by NIST CSF 2.0 and incident-response guidance.
+The planned capabilities include:
 
-The initial implementation will focus on the core stack and add infrastructure components such as Kafka, OpenSearch, Kubernetes, and Terraform only when they provide a clear architectural benefit.
+* Event validation and normalization.
+* Rule-based threat detection.
+* Network intrusion detection experiments using CICIDS2017.
+* Investigation and event correlation.
+* Risk assessment.
+* Response policy evaluation.
+* Selected defensive actions.
+* Post-response verification.
+* Alert and incident management.
+* Local data storage.
+* A monitoring dashboard.
+* Automated tests.
 
-## System Architecture
-
-CyberShield-Auto will use a modular, layered architecture. Each major component will have a defined responsibility and communicate with other components through well-defined interfaces.
-
-The high-level architecture is:
-
-```text
-                        CyberShield-Auto
-                               |
-                    ┌──────────▼──────────┐
-                    │   React Frontend    │
-                    │     Dashboard       │
-                    └──────────┬──────────┘
-                               |
-                            REST API
-                               |
-                    ┌──────────▼──────────┐
-                    │      FastAPI        │
-                    │    Backend Layer    │
-                    └──────────┬──────────┘
-                               |
-          ┌────────────────────┼────────────────────┐
-          |                    |                    |
-          ▼                    ▼                    ▼
-   Data Collection      Threat Detection       Response
-       Module                Engine              Engine
-          |                    |                    |
-          ▼                    ▼                    ▼
-   Validation &         ML Models &          Response Rules
-   Preprocessing        Classification
-          |                    |
-          └────────────┬───────┘
-                       ▼
-                  PostgreSQL
-                    Database
-                       |
-          ┌────────────┴────────────┐
-          ▼                         ▼
-      Prometheus                 MLflow
-       Metrics              Model Tracking
-          |
-          ▼
-       Grafana
-      Monitoring
-```
+Development will begin with synthetic events and controlled test cases. Real operating-system integrations and system-changing actions will be introduced incrementally.
 
-### Main Components
+### 5.2 CICIDS2017 scope
 
-#### 1. Frontend
+CICIDS2017 is the dataset selected for network intrusion detection work.
 
-The React frontend will provide the user interface for viewing security events, alerts, threat classifications, system status, and other information produced by the platform.
+It can support experiments involving labeled network traffic and evaluation of detection models. Its use does not, by itself, provide all the information required for endpoint monitoring.
 
-#### 2. API Layer
+The project must separately define and test the event sources needed for capabilities such as:
 
-FastAPI will provide the backend REST API. It will receive requests, validate input data, communicate with internal services, and return structured responses to the frontend and supported external clients.
+* Process creation and termination.
+* File creation and modification.
+* Authentication activity.
+* Selected startup or persistence changes.
+* Windows security events.
 
-#### 3. Data Collection
+The available dataset files, feature columns, label values, and preprocessing requirements must be inspected and documented before model development.
 
-The data collection layer will receive security-related information from supported APIs, system logs, network-security tools, and other telemetry sources.
+### 5.3 Out of scope for the initial release
 
-#### 4. Validation and Preprocessing
+The initial version will not promise:
 
-Incoming data will be validated using Pydantic and processed before being passed to the detection engine. Preprocessing may include cleaning, transformation, normalization, and feature engineering.
+* Detection of every possible cyberattack.
+* Unrestricted remote access to computers.
+* Arbitrary command execution generated by an AI model.
+* Automatic deletion of files based solely on suspicion.
+* Unrestricted modification of operating-system security settings.
+* Unauthorized monitoring of third-party computers.
+* Offensive exploitation capabilities.
+* Guaranteed threat removal without supporting evidence.
 
-#### 5. Threat Detection Engine
+The application is intended for defensive use on systems and resources the operator is authorized to manage.
 
-The detection engine will analyze processed security data using rule-based methods and machine learning models. Candidate models may include Scikit-learn algorithms, XGBoost, and LightGBM.
+## 6. Core capabilities
 
-#### 6. Response Engine
+### 6.1 Event collection
 
-The response engine will process detected threats and apply predefined response rules. Response actions will be controlled and logged rather than allowing unrestricted automated actions.
+The monitoring component will collect events from supported sources while the service is running.
 
-#### 7. Database
+Potential sources include Windows security logs, process metadata, file activity, and network connection information.
 
-PostgreSQL will store application data such as security events, alerts, detection results, users, configurations, and response records.
+The final list will depend on available interfaces, permissions, and implementation requirements.
 
-#### 8. Monitoring and Observability
+The collector should report failures and gaps in monitoring coverage.
 
-Prometheus, Grafana, and OpenTelemetry will be used to monitor application and infrastructure health, metrics, logs, and traces.
+### 6.2 Event validation and normalization
 
-#### 9. ML Lifecycle
+Incoming data must be validated before it reaches the detection engine.
 
-MLflow will be used to track machine learning experiments and manage model versions during development.
+The processing layer will standardize fields such as timestamps, event types, source identifiers, and event-specific attributes.
 
-### Data Flow
+Malformed events should be rejected or handled according to documented rules without crashing unrelated processing tasks.
 
-The general data flow will be:
+### 6.3 Threat detection
 
-```text
-Security Data
-      ↓
-Data Collection
-      ↓
-Validation
-      ↓
-Preprocessing
-      ↓
-Feature Engineering
-      ↓
-Threat Detection
-      ↓
-Threat Classification
-      ↓
-Alert Generation
-      ↓
-Response Engine
-      ↓
-Database / Monitoring
-      ↓
-React Dashboard
-```
+The first detection implementation will prioritize deterministic rules because their behavior is easier to test and explain.
 
-The architecture will be developed incrementally. Core components will be implemented first. Additional infrastructure such as Kafka, OpenSearch, Kubernetes, and Terraform will be introduced when they are required by the project's scale or deployment architecture.
+Possible detection categories include:
 
+* Suspicious process activity.
+* Known malicious file indicators.
+* Repeated authentication failures.
+* Suspicious network connections.
+* Unexpected changes to selected persistence locations.
+* Repeated related events that warrant investigation.
 
-## Project Modules
+Detection quality will depend on the available event data and the coverage of the implemented rules.
 
-CyberShield-Auto will be divided into independent modules. Each module will have a specific responsibility and will communicate with other modules through defined interfaces.
+### 6.4 Network intrusion detection
 
-### 1. Data Collection Module
+CICIDS2017 will be used to develop and evaluate network traffic classification.
 
-The Data Collection Module will collect security-related information from supported APIs, system logs, network-security tools, and other telemetry sources.
+The workflow may include:
 
-**Responsibilities:**
+1. Inspecting the available dataset files.
+2. Identifying the feature columns and target labels.
+3. Cleaning and validating the records.
+4. Preparing the features.
+5. Separating training, validation, and test data if machine learning is used.
+6. Evaluating predictions with suitable metrics.
+7. Recording limitations and reproducible results.
 
-- Receive security events from supported sources.
-- Handle incoming API requests.
-- Normalize collected data into the expected format.
-- Forward collected data to the validation layer.
+The project must guard against data leakage and report performance on the dataset separately from performance on live network traffic.
 
-### 2. Data Validation Module
+### 6.5 Investigation and correlation
 
-The Data Validation Module will verify that incoming security data has the expected structure and data types before further processing.
+The investigation component will gather available evidence related to a finding.
 
-**Responsibilities:**
+Depending on the event sources, this may include process metadata, file information, network connection details, authentication events, or related observations.
 
-- Validate incoming request data.
-- Apply Pydantic models and constraints.
-- Reject invalid or incomplete data.
-- Return meaningful validation errors.
+The component should identify missing evidence and distinguish observed facts from inferences.
 
-### 3. Preprocessing Module
+### 6.6 Risk assessment
 
-The Preprocessing Module will prepare validated security data for analysis.
+Risk assessment will consider evidence strength, confidence, potential impact, affected resources, and the consequences of a proposed response.
 
-**Responsibilities:**
+Severity and confidence must remain separate values.
 
-- Clean security data.
-- Handle missing or invalid values.
-- Transform relevant fields.
-- Normalize or encode features when required.
-- Prepare data for feature engineering.
+A detection score alone must not grant permission to perform a high-impact operation.
 
-### 4. Feature Engineering Module
+### 6.7 Automated response
 
-The Feature Engineering Module will create useful features from processed security data.
+The response system will execute only operations permitted by the response policy.
 
-**Responsibilities:**
+Potential actions may include collecting additional evidence, terminating a confirmed malicious process, or quarantining a file when the implementation and policy support those operations.
 
-- Extract relevant security indicators.
-- Transform raw security events into model-ready features.
-- Calculate statistical and behavioral features.
-- Maintain consistent feature definitions between training and inference.
+Every action must have defined authorization conditions, target restrictions, failure handling, and verification requirements.
 
-### 5. Threat Detection Module
+Detection-only mode and simulation mode will support development and testing before real system-changing actions are enabled.
 
-The Threat Detection Module will analyze security data and identify potentially suspicious activity.
+### 6.8 Response verification
 
-**Responsibilities:**
+The verification component will inspect the relevant state after an action.
 
-- Apply rule-based detection where appropriate.
-- Run trained machine learning models.
-- Generate threat classifications.
-- Produce confidence or probability values when supported.
-- Record detection results.
+It must distinguish among:
 
-Candidate machine learning models may include Scikit-learn algorithms, XGBoost, and LightGBM.
+* Action succeeded and the intended result was verified.
+* Action failed.
+* Action was executed, but the outcome remains uncertain.
+* The action succeeded, but suspicious activity continues.
 
-### 6. Alert Management Module
+A successful command does not prove that the entire incident has been resolved.
 
-The Alert Management Module will manage alerts generated by the detection system.
+### 6.9 Alerts and incident history
 
-**Responsibilities:**
+The application will maintain structured records containing relevant observations, findings, policy decisions, response attempts, and verification results.
 
-- Create alerts from detection results.
-- Assign relevant severity information.
-- Store alert details.
-- Track alert status.
-- Provide alert information to the dashboard.
+Alerts should explain why the event was flagged and show the current incident and response status.
 
-### 7. Response Module
+The dashboard should distinguish detections from actions that have actually been executed and verified.
 
-The Response Module will handle predefined actions for detected threats.
+## 7. Proposed system architecture
 
-**Responsibilities:**
+CyberShield-Auto will initially use a modular Python architecture. The components may run within one application rather than as separate services.
 
-- Evaluate response rules.
-- Select an appropriate predefined action.
-- Record the response decision.
-- Execute only authorized and controlled actions.
-- Maintain an audit record of response activities.
+The main components are:
 
-### 8. Database Module
+| Component           | Responsibility                                  |
+| ------------------- | ----------------------------------------------- |
+| Monitoring          | Collects events from supported sources          |
+| Event processing    | Validates and normalizes data                   |
+| Detection engine    | Evaluates rules and produces findings           |
+| Investigation       | Gathers evidence and correlates events          |
+| Risk assessment     | Evaluates severity, confidence, and impact      |
+| Policy engine       | Determines which actions are permitted          |
+| Response executor   | Performs approved operations                    |
+| Verification        | Checks action outcomes                          |
+| Incident management | Maintains incident state and history            |
+| Alerting            | Communicates detections and response outcomes   |
+| Storage             | Persists incidents, findings, and audit records |
+| API and dashboard   | Exposes authorized operations and information   |
+| AI integration      | Provides optional investigation summaries       |
 
-The Database Module will provide persistent storage for application and security-related information.
+The expected processing flow is:
 
-**Responsibilities:**
+**Monitoring → Event processing → Detection → Investigation → Risk assessment → Policy evaluation → Response → Verification → Alerting and incident updates**
 
-- Store security events.
-- Store alerts and detection results.
-- Store response records.
-- Store system configuration data.
-- Provide data access to authorized application components.
+Not every event will require every stage. The implementation may close low-risk events without further investigation when the configured rules support that decision.
 
-PostgreSQL will be used as the primary relational database.
+## 8. AI integration
 
-### 9. Monitoring and Observability Module
+AI may assist with explaining findings, summarizing evidence, and preparing investigation notes.
 
-The Monitoring and Observability Module will provide visibility into the health and operation of the platform.
+The AI component will receive only the data needed for the requested task, subject to the project's privacy requirements.
 
-**Responsibilities:**
+Its outputs must be validated and checked against the evidence supplied to it.
 
-- Collect application metrics.
-- Monitor service health.
-- Collect logs and traces where required.
-- Display operational metrics and alerts.
-- Support troubleshooting and system monitoring.
+The AI component must not:
 
-Prometheus, Grafana, and OpenTelemetry will be used for these capabilities.
+* Execute arbitrary system commands.
+* Modify response policies.
+* Grant itself permissions.
+* Approve its own recommendations.
+* Bypass the policy engine.
+* Present unsupported conclusions as confirmed facts.
 
-### 10. Machine Learning Lifecycle Module
+If the AI provider is unavailable or returns invalid output, the core detection and policy components should continue to behave predictably.
 
-The Machine Learning Lifecycle Module will manage the development and tracking of machine learning models.
+## 9. Security and safety requirements
 
-**Responsibilities:**
+CyberShield-Auto is itself a security-sensitive application. Its own design must reduce the risk of unauthorized access and unsafe actions.
 
-- Track model experiments.
-- Record model parameters and evaluation results.
-- Manage model versions.
-- Support model registration.
-- Maintain reproducibility of model experiments.
+The following requirements will guide implementation:
 
-MLflow will be used for experiment tracking and model lifecycle management.
+1. Apply least privilege.
+2. Validate incoming event data and response requests.
+3. Separate detection from response authorization.
+4. Restrict the executor to an explicit action allowlist.
+5. Validate targets before executing an action.
+6. Deny actions when authorization cannot be established.
+7. Protect configuration files and credentials.
+8. Record security-relevant decisions and outcomes.
+9. Provide an emergency stop for automated responses.
+10. Support detection-only and simulation modes.
+11. Handle failures without silently reporting success.
+12. Minimize unnecessary collection of sensitive information.
+13. Test response behavior in isolation before enabling it on a real endpoint.
 
-### 11. Frontend Dashboard Module
+These requirements will be developed further in the dedicated security and response-policy documents.
 
-The Frontend Dashboard Module will provide the main user interface for CyberShield-Auto.
+## 10. Proposed technology stack
 
-**Responsibilities:**
+The initial technology choices are provisional.
 
-- Display security events.
-- Display detected threats.
-- Display alerts and their status.
-- Display monitoring information.
-- Provide authorized users with relevant system controls.
+| Technology               | Intended use                                        |
+| ------------------------ | --------------------------------------------------- |
+| Python                   | Core application logic                              |
+| Pydantic                 | Validation of events, findings, and action requests |
+| FastAPI                  | Backend API                                         |
+| SQLite                   | Initial local database                              |
+| Streamlit                | Initial dashboard                                   |
+| pytest                   | Automated testing                                   |
+| scikit-learn             | Possible machine-learning experiments               |
+| Git                      | Version control                                     |
+| Windows event interfaces | Collection of supported endpoint events             |
 
-React and TypeScript will be used for the frontend.
+CICIDS2017 will provide data for network intrusion detection experiments.
 
-### 12. Authentication and Authorization Module
+The final dependencies and operating-system interfaces will be selected after the requirements are confirmed. Unnecessary dependencies should be avoided.
 
-The Authentication and Authorization Module will control access to protected application resources.
+## 11. Data management and privacy
 
-**Responsibilities:**
+Security events may contain account identifiers, process details, file paths, timestamps, and network metadata.
 
-- Authenticate users.
-- Manage access permissions.
-- Protect API endpoints.
-- Enforce authorization rules.
-- Support secure access to security-related information.
+The application should collect only the information needed for its documented functions.
 
-OAuth 2.0 and OpenID Connect may be used as the authentication and authorization standards.
+The data design must define:
 
-### Module Interaction
+* Which event sources are collected.
+* Which fields are retained.
+* Where records are stored.
+* Who can access incident information.
+* How long records are retained.
+* How records are deleted.
+* How credentials and other secrets are protected.
+* How diagnostic logs avoid unnecessary sensitive information.
 
-The major modules will interact through the following flow:
+CICIDS2017 must be handled according to its applicable usage and licensing terms. Dataset transformations should be documented so experiments can be reproduced.
 
-```text
-Data Sources
-     ↓
-Data Collection
-     ↓
-Data Validation
-     ↓
-Preprocessing
-     ↓
-Feature Engineering
-     ↓
-Threat Detection
-     ↓
-Alert Management
-     ↓
-Response
-     ↓
-Database
-     ↓
-React Dashboard
+Centralized collection or transmission of endpoint events will require additional authentication, access control, encryption, and privacy safeguards.
 
-Monitoring and Observability
-     └── monitors application and infrastructure components
+## 12. Testing and evaluation
 
-ML Lifecycle
-     └── supports training, evaluation, tracking, and versioning
-```
+Testing will begin with synthetic events and isolated components.
 
-The modules will be implemented incrementally. Initial development will focus on the core data, detection, API, database, and frontend components before introducing additional infrastructure.
+The test strategy will cover:
 
-## Dataset
+### Unit tests
 
-CyberShield-Auto will require cybersecurity-related data for developing, training, evaluating, and testing the threat detection system.
+Validate event models, detection rules, risk calculations, policy decisions, and incident state transitions.
 
-The dataset will contain security events and features that can be used to distinguish normal activity from potentially malicious or suspicious activity.
+### Integration tests
 
-### Data Sources
+Check the flow of data through detection, investigation, response authorization, storage, and verification.
 
-The project may use data from:
+### Dataset evaluation
 
-- Public cybersecurity datasets.
-- System and application logs.
-- Network traffic and network-security telemetry.
-- Security APIs.
-- Controlled test environments.
-- Data generated from simulated security events.
+Evaluate network detection using CICIDS2017. Report the data split, class distribution, preprocessing, and metrics used.
 
-Potential security telemetry sources include tools such as Zeek and Suricata when they are introduced into the project.
+### Response tests
 
-### Dataset Processing
+Confirm that permitted actions are accepted and prohibited actions are rejected.
 
-Before the data is used by the detection system, it will pass through the following process:
+### Failure tests
 
-```text
-Raw Security Data
-        ↓
-Data Validation
-        ↓
-Data Cleaning
-        ↓
-Data Transformation
-        ↓
-Feature Engineering
-        ↓
-Train / Validation / Test Split
-        ↓
-Model Training
-        ↓
-Model Evaluation
-```
+Simulate invalid events, missing permissions, unavailable services, timeouts, failed actions, and inconclusive verification.
 
-### Dataset Requirements
+### Security tests
 
-The selected dataset should provide sufficient information for the intended threat detection task. Depending on the selected detection problem, the data may contain information such as:
+Test access controls, policy enforcement, secret handling, audit records, and attempts to bypass response restrictions.
 
-- Network connections
-- Source and destination information
-- Protocol information
-- Ports
-- Connection duration
-- Packet and byte statistics
-- Authentication events
-- Login attempts
-- System events
-- Request frequency
-- Security event types
-- Threat labels, when available
+The application must not be described as fully tested solely because its unit tests pass.
 
-The exact features will depend on the dataset selected for the specific detection task.
+## 13. Performance and reliability
 
-### Dataset Selection
+Performance targets will be defined after the initial implementation and test environment are established.
 
-The final dataset will be selected after evaluating available cybersecurity datasets against the requirements of CyberShield-Auto.
+Measurements may include:
 
-The selection process will consider:
+* Event collection latency.
+* Detection latency.
+* Alert delivery latency.
+* Event-processing throughput.
+* CPU and memory consumption.
+* Detection precision and recall.
+* False-positive rate.
+* Response execution success rate.
+* Verification success rate.
+* Recovery from component failures.
 
-- Relevance to the threat detection problem.
-- Data quality.
-- Availability of suitable labels.
-- Feature completeness.
-- Dataset size.
-- Class distribution.
-- Licensing and permitted usage.
-- Suitability for machine learning evaluation.
+The application should report dropped events, unavailable sources, and inconclusive outcomes rather than presenting incomplete monitoring as normal operation.
 
-### Data Splitting
+## 14. Development roadmap
 
-Where supervised machine learning is used, the dataset will be divided into training, validation, and testing data.
+Development will proceed through the following stages.
 
-The test data will be kept separate from model training so that the final model can be evaluated on previously unseen data.
+| Phase | Focus                                | Completion evidence                                                |
+| ----- | ------------------------------------ | ------------------------------------------------------------------ |
+| 0     | Project foundation and documentation | Scope, requirements, architecture, and security policies reviewed  |
+| 1     | Event models and collection          | Supported events can be validated and processed in tests           |
+| 2     | Threat detection                     | Documented test cases produce expected findings                    |
+| 3     | Investigation and correlation        | Findings include traceable evidence                                |
+| 4     | Risk assessment                      | Risk decisions follow documented rules                             |
+| 5     | Response policy                      | Permitted actions are accepted and prohibited actions are rejected |
+| 6     | Controlled response                  | Approved actions work in an isolated environment                   |
+| 7     | Verification                         | Success, failure, and uncertainty are represented correctly        |
+| 8     | Alerting and dashboard               | Incidents and status changes are visible to the user               |
+| 9     | Network detection evaluation         | CICIDS2017 experiments produce reproducible results                |
+| 10    | Integration and security hardening   | Required integration and security tests pass                       |
+| 11    | Packaging and deployment             | Installation and operating instructions are verified               |
 
-### Future Data Sources
+The roadmap should be updated using verified implementation and test results.
 
-As the project develops, CyberShield-Auto may integrate live or near-real-time security telemetry from supported sources such as system logs, APIs, Zeek, and Suricata.
+## 15. Success criteria
 
-The actual dataset and data sources will be documented separately once the threat detection use case and dataset have been finalized.
+The initial release should demonstrate that:
 
+* Supported events can be processed correctly.
+* Documented test scenarios produce expected findings.
+* Findings include supporting evidence.
+* Response policies control all system-changing actions.
+* Unauthorized actions are rejected.
+* Approved actions can be tested safely.
+* Verification accurately reports the result.
+* Incident history and audit records are maintained.
+* Failures are reported accurately.
+* Detection performance can be measured and reproduced.
+* The application operates within acceptable resource limits.
 
-## API Design
+Quantitative thresholds will be set when the event sources, hardware constraints, and test environment are known.
 
-CyberShield-Auto will use a REST API built with FastAPI. The API will provide the interface between the React frontend, security-data sources, detection services, database, and other authorized clients.
+## 16. Known limitations
 
-### API Responsibilities
+CyberShield-Auto will have limitations that depend on its event sources, permissions, and detection coverage.
 
-The API layer will:
+Unknown threats may evade detection. Legitimate activity may resemble malicious behavior. A compromised operating system may manipulate local events and records. AI-generated summaries may contain errors, and a defensive action may reduce immediate risk without removing every part of a threat.
 
-- Receive security-related data.
-- Validate incoming requests.
-- Send data to the appropriate processing and detection modules.
-- Return structured detection results.
-- Manage security events and alerts.
-- Provide access to authorized stored security information.
-- Expose system health and status information where required.
-- Enforce authentication and authorization for protected resources.
+The application must communicate these limitations clearly. It must not claim that the computer is completely secure merely because no threats were detected.
 
-### API Structure
+## 17. Development principles
 
-The initial API will be organized around resources rather than individual frontend screens.
+The project will follow these principles:
 
-```text
-/api/v1
-    |
-    ├── /health
-    ├── /events
-    ├── /detections
-    ├── /alerts
-    ├── /responses
-    ├── /models
-    └── /auth
-```
+1. Document requirements before implementing the corresponding features.
+2. Keep components focused on defined responsibilities.
+3. Make requirements testable.
+4. Record important architectural decisions.
+5. Keep detection separate from response authorization.
+6. Use explicit policies for automated actions.
+7. Verify response outcomes.
+8. Test new behavior and preserve regression tests.
+9. Keep AI authority limited to its documented role.
+10. Record meaningful development milestones in Git.
+11. Update project documentation to match verified progress.
+12. Avoid claiming that a feature is complete without evidence.
 
-The `/api/v1` prefix will provide a clear version boundary for future breaking changes.
+## 18. Current status
 
-### HTTP Methods
+**Project phase:** Planning and documentation.
 
-The API will use standard HTTP methods according to the operation being performed:
+**Dataset:** CICIDS2017 has been identified for network intrusion detection. The available files and preprocessing requirements must be confirmed.
 
-| Method | Purpose |
-|---|---|
-| GET | Retrieve a resource |
-| POST | Create a resource or submit data for processing |
-| PUT | Replace a resource |
-| PATCH | Partially update a resource |
-| DELETE | Remove a resource when permitted |
+**Implementation status:** This overview does not establish which application components have been implemented or tested.
 
-These methods follow the standard HTTP semantics defined by RFC 9110. :contentReference[oaicite:3]{index=3}
+**Current priority:** Complete and review the project documentation before proceeding with the planned implementation workflow.
 
-### Request and Response Format
+## 19. Summary
 
-JSON will be the primary request and response format for application endpoints.
+CyberShield-Auto aims to connect security event collection, threat detection, investigation, risk assessment, policy-controlled response, verification, and alerting in a modular Python application.
 
-Example security-event request:
+CICIDS2017 will support network intrusion detection experiments. Separate event sources and test data will be needed for Windows endpoint monitoring and other capabilities.
 
-```json
-{
-  "source": "network_sensor",
-  "timestamp": "2026-09-27T10:30:00Z",
-  "source_ip": "192.168.1.10",
-  "destination_ip": "192.168.1.20",
-  "protocol": "TCP",
-  "destination_port": 443
-}
-```
-
-Example detection response:
-
-```json
-{
-  "event_id": "evt_001",
-  "prediction": "suspicious",
-  "confidence": 0.94,
-  "model_version": "v1.0"
-}
-```
-
-The final request and response schemas will be defined during API implementation.
-
-### Validation
-
-Pydantic models will be used to validate API requests and response data.
-
-Validation will ensure that:
-
-- Required fields are present.
-- Values use the expected data types.
-- Input values satisfy defined constraints.
-- Invalid requests are rejected before entering the processing pipeline.
-
-Validation will be treated as one layer of security rather than the only security control.
-
-### Error Handling
-
-The API will return appropriate HTTP status codes and structured error responses.
-
-Common status codes include:
-
-| Status Code | Meaning |
-|---|---|
-| 200 | Request completed successfully |
-| 201 | Resource created successfully |
-| 400 | Bad request |
-| 401 | Authentication required |
-| 403 | Access denied |
-| 404 | Resource not found |
-| 405 | HTTP method not allowed |
-| 422 | Validation error |
-| 500 | Internal server error |
-
-HTTP status codes will follow standard HTTP semantics. :contentReference[oaicite:4]{index=4}
-
-Error responses will not expose stack traces, credentials, internal paths, database details, or other unnecessary internal information.
-
-### Authentication and Authorization
-
-Protected endpoints will require authentication and authorization.
-
-The authorization design will distinguish between:
-
-- Authentication of the user or client.
-- Authorization to access a specific resource.
-- Authorization to perform a specific function.
-- Authorization to access individual properties or sensitive fields.
-
-This is important because OWASP identifies broken object-level authorization, broken authentication, broken object-property authorization, and broken function-level authorization as major API security risks. :contentReference[oaicite:5]{index=5}
-
-OAuth 2.0 and OpenID Connect may be used where an external or dedicated identity provider is required. The exact authentication implementation will be selected during the authentication module phase.
-
-### API Security Controls
-
-The API will include security controls appropriate to the endpoint and threat model.
-
-These may include:
-
-- Authentication.
-- Authorization.
-- Input validation.
-- Rate limiting and resource controls.
-- Secure error handling.
-- Security event logging.
-- Protection of sensitive information.
-- Request size limits.
-- Secure handling of external API responses.
-- API inventory and version management.
-- HTTPS for network communication.
-
-Rate limiting and resource controls are particularly relevant because unrestricted resource consumption is included in the OWASP API Security Top 10. :contentReference[oaicite:6]{index=6}
-
-External API integrations will also be treated as security boundaries. Data received from third-party services will not automatically be considered trustworthy. OWASP specifically identifies unsafe consumption of APIs as an API security risk. :contentReference[oaicite:7]{index=7}
-
-### API Versioning
-
-The API will use versioned routes such as:
-
-```text
-/api/v1/events
-/api/v1/detections
-/api/v1/alerts
-```
-
-A new API version can be introduced when a breaking change cannot be handled compatibly within the existing version.
-
-### API Documentation
-
-FastAPI will be used to generate an OpenAPI specification for the API.
-
-Interactive documentation will be available during development through the generated Swagger UI and ReDoc interfaces.
-
-The API documentation will describe:
-
-- Available endpoints.
-- HTTP methods.
-- Request schemas.
-- Response schemas.
-- Authentication requirements.
-- Expected status codes.
-- Validation requirements.
-
-### API Testing
-
-The API will be tested at multiple levels.
-
-Testing will include:
-
-- Unit tests for API-related functions.
-- Request validation tests.
-- Authentication and authorization tests.
-- Endpoint integration tests.
-- Error-handling tests.
-- Security-focused API tests.
-
-Automated API tests will be included in the project's test suite and CI/CD pipeline as the implementation develops.
-
-### API Integration Flow
-
-The main request flow will be:
-
-```text
-Client / Security Source
-          ↓
-       FastAPI
-          ↓
- Authentication / Authorization
-          ↓
-       Validation
-          ↓
-      Processing
-          ↓
-   Threat Detection
-          ↓
-    Alert / Response
-          ↓
-      PostgreSQL
-          ↓
-       API Response
-          ↓
-     React Dashboard
-```
-
-The API will be implemented incrementally. Development will begin with health checks and basic event ingestion before adding detection, alerts, responses, authentication, authorization, and administrative endpoints.
-
-## Threat Detection and Machine Learning
-
-CyberShield-Auto will use a combination of rule-based detection and machine learning to identify potentially suspicious security activity.
-
-The machine learning pipeline will be developed separately from the API and frontend so that models can be trained, evaluated, versioned, and replaced without tightly coupling them to the application layer.
-
-### Detection Pipeline
-
-The general machine learning workflow will be:
-
-```text
-Security Dataset
-       ↓
-Data Validation
-       ↓
-Data Cleaning
-       ↓
-Feature Engineering
-       ↓
-Train / Validation / Test Split
-       ↓
-Baseline Model
-       ↓
-Candidate Models
-       ↓
-Model Evaluation
-       ↓
-Model Selection
-       ↓
-Model Versioning
-       ↓
-Inference
-       ↓
-Threat Classification
-       ↓
-Threat Score / Alert
-```
-
-### Rule-Based Detection
-
-Rule-based detection will be used for conditions that can be expressed clearly through predefined security rules.
-
-Examples may include:
-
-- Repeated failed authentication attempts.
-- Requests from blocked or known malicious sources.
-- Unusual access to restricted resources.
-- Events that match predefined security signatures.
-
-Rules will be versioned and tested so that changes can be tracked.
-
-### Machine Learning Detection
-
-Machine learning will be used where statistical or behavioral patterns are useful for identifying suspicious activity.
-
-The initial model candidates may include:
-
-- Logistic Regression.
-- Random Forest.
-- Gradient Boosting.
-- XGBoost.
-- LightGBM.
-
-Scikit-learn will provide baseline models and supporting preprocessing and evaluation tools. XGBoost and LightGBM will be evaluated for suitable tabular cybersecurity datasets.
-
-The project will not assume that one algorithm is always the best. Model selection will be based on experimental results for the specific detection task.
-
-### Classification Tasks
-
-Depending on the selected dataset and detection problem, the system may support:
-
-- Binary classification, such as normal versus malicious activity.
-- Multiclass classification, such as different categories of attacks.
-- Anomaly detection for identifying unusual behavior when reliable labels are unavailable.
-
-The exact task will be finalized after the dataset and initial detection use case are selected.
-
-### Model Evaluation
-
-Cybersecurity models will not be evaluated using accuracy alone.
-
-The evaluation process will consider metrics such as:
-
-- Precision.
-- Recall.
-- F1-score.
-- ROC-AUC.
-- PR-AUC.
-- Confusion matrix.
-- False-positive rate.
-- False-negative rate.
-- Inference time where relevant.
-
-The importance of each metric will depend on the detection task.
-
-For example, a high false-positive rate can generate excessive security alerts, while a high false-negative rate can allow malicious activity to remain undetected.
-
-### Data Leakage and Evaluation Integrity
-
-The machine learning pipeline will be designed to prevent information from the validation or test data from leaking into model training.
-
-The project will specifically consider:
-
-- Train/test contamination.
-- Feature leakage.
-- Duplicate records across splits.
-- Preprocessing performed before data splitting.
-- Temporal leakage where security events have a time-dependent relationship.
-- Class imbalance.
-
-Preprocessing and feature engineering steps that learn parameters from data will be fitted only on the appropriate training data.
-
-### Class Imbalance
-
-Cybersecurity datasets may contain significantly different numbers of samples across classes.
-
-The project will evaluate class distributions before training and consider appropriate techniques when imbalance affects model performance.
-
-Possible approaches include:
-
-- Class weighting.
-- Appropriate sampling techniques.
-- Threshold adjustment.
-- Precision-recall analysis.
-
-Sampling methods will be applied carefully to avoid introducing data leakage.
-
-### Model Explainability
-
-Where appropriate, CyberShield-Auto will use explainability techniques to help understand why a model produced a particular prediction.
-
-SHAP may be evaluated for explaining feature contributions for supported models.
-
-The dashboard can later expose relevant explanation information alongside a detection result.
-
-### Model Tracking
-
-MLflow will be used to track machine learning experiments and model versions.
-
-Experiment records may include:
-
-- Dataset version.
-- Feature configuration.
-- Model type.
-- Hyperparameters.
-- Evaluation metrics.
-- Training information.
-- Model version.
-
-This will make model experiments reproducible and easier to compare.
-
-### Inference
-
-During inference, the trained model will receive validated and correctly transformed features and produce a prediction.
-
-The inference flow will be:
-
-```text
-Incoming Security Event
-          ↓
-       Validation
-          ↓
-      Preprocessing
-          ↓
-    Feature Engineering
-          ↓
-       ML Model
-          ↓
-      Prediction
-          ↓
- Threat Classification
-          ↓
- Threat Score / Alert
-```
-
-The same feature transformations used during training must be applied consistently during inference.
-
-### Model Deployment
-
-The trained model will eventually be integrated with the backend detection service.
-
-The model-serving design will keep model inference separate from the frontend so that the model can be updated without requiring changes to the React application.
-
-Model deployment and replacement will be introduced after the initial model has been properly trained and evaluated.
-
-
-## Threat Scoring and Risk Assessment
-
-CyberShield-Auto will assign a risk score to detected security events to help distinguish lower-risk events from events that require greater attention.
-
-The risk score will not replace the machine learning prediction. Instead, it will combine relevant detection information into a consistent representation of the potential severity of an event.
-
-### Risk Assessment Flow
-
-```text
-Security Event
-      ↓
-Threat Detection
-      ↓
-Prediction + Confidence
-      ↓
-Risk Factors
-      ↓
-Risk Scoring
-      ↓
-Severity Classification
-      ↓
-Alert
-      ↓
-Response Decision
-```
-
-### Risk Factors
-
-Depending on the detection use case, the risk assessment may consider factors such as:
-
-- Model prediction.
-- Model confidence or probability.
-- Detection type.
-- Frequency of similar events.
-- Source and destination information.
-- Authentication context.
-- Historical event information.
-- Rule-based detection results.
-- Potential impact of the detected activity.
-
-The exact factors will be defined after the initial detection use case and dataset have been finalized.
-
-### Risk Score
-
-The system may represent risk using a normalized numerical score.
-
-For example:
-
-```text
-0 ───────────────────────────────────────── 100
-Low              Medium          High     Critical
-```
-
-The numerical boundaries will be defined and tested during implementation rather than assumed in advance.
-
-### Severity Levels
-
-The platform may use severity categories such as:
-
-- Low
-- Medium
-- High
-- Critical
-
-Severity should be derived from defined rules and risk thresholds so that the same type of event is handled consistently.
-
-### Alert Prioritization
-
-Risk scores can be used to help prioritize alerts.
-
-Higher-risk events may receive greater attention in the dashboard and response workflow, while lower-risk events can remain available for investigation and analysis.
-
-The score should not be treated as proof that an event is malicious. It represents the system's assessment based on the available detection information.
-
-### Explainability
-
-Where machine learning contributes to the risk assessment, the system should retain relevant information about the prediction.
-
-This may include:
-
-- Model version.
-- Prediction.
-- Prediction probability or confidence.
-- Important contributing features.
-- Detection rules that were triggered.
-- Risk factors used by the scoring system.
-
-This information can later be displayed in the dashboard to help users understand why an event received its risk assessment.
-
-### Risk Scoring and Response
-
-The risk score can be used as one input to the response engine.
-
-```text
-Detection Result
-      ↓
-Risk Assessment
-      ↓
-Severity
-      ↓
-Response Rules
-      ↓
-Predefined Action
-```
-
-Response actions will remain controlled by predefined rules and authorization requirements. The system will not automatically perform unrestricted actions solely because a model produces a high score.
-
-### Future Development
-
-The initial implementation will use a simple and explainable scoring approach. More advanced risk scoring techniques can be evaluated later when sufficient historical security-event data is available.
-
-
-## Alert and Response System
-
-CyberShield-Auto will use an alert and response workflow to handle security events identified by the detection system.
-
-The alert system will separate detection from response so that a detected event can be reviewed, prioritized, recorded, and handled through controlled actions.
-
-### Alert Flow
-
-```text
-Security Event
-      ↓
-Threat Detection
-      ↓
-Risk Assessment
-      ↓
-Alert Generation
-      ↓
-Alert Prioritization
-      ↓
-Response Decision
-      ↓
-Predefined Response
-      ↓
-Event and Response Logging
-```
-
-### Alert Generation
-
-An alert will be generated when a security event satisfies the configured detection or risk conditions.
-
-An alert may contain information such as:
-
-- Alert ID.
-- Event ID.
-- Detection type.
-- Threat classification.
-- Risk score.
-- Severity.
-- Detection timestamp.
-- Source information.
-- Destination information when applicable.
-- Model version when machine learning was used.
-- Detection explanation when available.
-- Alert status.
-
-### Alert Severity
-
-Alerts may be categorized using the following severity levels:
-
-- Low
-- Medium
-- High
-- Critical
-
-The severity will be determined using defined risk-scoring and detection rules.
-
-Severity thresholds will be tested and adjusted during development based on observed detection behavior and false-positive rates.
-
-### Alert Status
-
-The alert lifecycle may use states such as:
-
-```text
-New
- ↓
-Acknowledged
- ↓
-Investigating
- ↓
-Resolved
-```
-
-Additional states may be introduced if required by the investigation and response workflow.
-
-### Response Engine
-
-The Response Engine will determine whether a predefined action should be performed for an alert.
-
-Possible response actions may include:
-
-- Record the event.
-- Update the alert status.
-- Notify an authorized user.
-- Create an investigation task.
-- Apply a predefined defensive action in an authorized test environment.
-
-The initial implementation will focus on safe, controlled response actions.
-
-### Response Rules
-
-Response decisions will be based on defined conditions rather than directly trusting a machine learning prediction.
-
-A response rule may consider:
-
-- Alert severity.
-- Risk score.
-- Detection type.
-- Confidence or probability.
-- Triggered security rules.
-- Event history.
-- Authorization requirements.
-
-Example:
-
-```text
-IF
-    severity = High
-    AND
-    detection_type = Suspicious Authentication
-    AND
-    response_rule = enabled
-
-THEN
-    create_alert
-    record_event
-    notify_authorized_user
-```
-
-### Human Oversight
-
-Actions that could affect systems, users, or network access will require appropriate authorization and controls.
-
-The system will not perform unrestricted automated actions based only on a machine learning prediction.
-
-Response actions will be logged so that security events and system decisions can be reviewed later.
-
-### Audit Logging
-
-The response system will maintain records of:
-
-- Detection events.
-- Generated alerts.
-- Alert status changes.
-- Response decisions.
-- Executed response actions.
-- Relevant timestamps.
-- Model and rule versions where applicable.
-
-These records will support investigation, debugging, auditing, and evaluation of the response system.
-
-### Response Safety
-
-Automated response capabilities will initially be tested in controlled environments.
-
-Any response action that could affect an external system will require explicit authorization and appropriate safeguards before it is enabled.
-
-The response system will be developed incrementally, beginning with alert generation and notification before introducing more advanced automated defensive actions.
-
-## Database Design
-
-CyberShield-Auto will use PostgreSQL as the primary database for storing application data generated by the detection and response pipeline.
-
-The database will provide persistent storage for security events, detection results, alerts, response records, and other application information required by the platform.
-
-### Main Data Entities
-
-The database may contain the following main entities:
-
-- **Security Events:** Store collected security-related events and their relevant attributes.
-- **Detection Results:** Store threat predictions, detection types, confidence or probability values, and model information.
-- **Alerts:** Store generated alerts, risk scores, severity, status, and timestamps.
-- **Response Records:** Store response decisions and actions associated with alerts.
-- **Users:** Store application user information required for authentication and authorization.
-- **Model Information:** Store metadata about models used for threat detection, such as model version and deployment status.
-
-### Data Relationship
-
-The general relationship between the main entities is:
-
-```text
-Security Event
-      ↓
-Detection Result
-      ↓
-Alert
-      ↓
-Response Record
-```
-
-A security event may produce a detection result, which may generate an alert. An alert may then be associated with one or more response records.
-
-### Database Responsibilities
-
-The database will be responsible for:
-
-- Persisting security events and detection results.
-- Storing alert information and alert status changes.
-- Recording response decisions and actions.
-- Maintaining relevant model and rule information.
-- Supporting retrieval of historical security events and alerts.
-- Providing data required by the API and dashboard.
-- Maintaining records needed for auditing and investigation.
-
-### Data Integrity
-
-The application will use appropriate database constraints and relationships to maintain data integrity.
-
-Important records should include identifiers and timestamps so that events, detections, alerts, and responses can be correlated during investigation.
-
-Database access will be performed through the backend API rather than allowing the frontend to access PostgreSQL directly.
-
-### Database Security
-
-Database access will be restricted to authorized application components. Credentials and connection information will be managed through environment configuration rather than being stored directly in source code.
-
-The system will use appropriate access controls and will avoid storing unnecessary sensitive information.
-
-### Database Development Approach
-
-The initial database design will focus on the core entities required by the detection and response pipeline.
-
-Additional tables, indexes, relationships, and optimizations will be introduced when they are required by the implemented features and observed data-access patterns.
-
-
-## Monitoring and Logging
-
-CyberShield-Auto will include monitoring and logging to track system activity, security events, detection results, alerts, and response actions.
-
-Monitoring and logging will help identify system problems, support security investigation, and provide visibility into the operation of the platform.
-
-### Application Monitoring
-
-The system will monitor important application components such as:
-
-- API availability and response status.
-- Detection service status.
-- Database connectivity.
-- Processing errors.
-- Request and processing performance.
-- System resource usage where required.
-
-### Security Event Logging
-
-Security-related events will be recorded with relevant information such as:
-
-- Event ID.
-- Event type.
-- Timestamp.
-- Source information.
-- Detection result.
-- Risk score when available.
-- Alert information when generated.
-- Response information when applicable.
-
-### Application Logs
-
-Application logs will record important events generated by the backend and other system components.
-
-Logs may include:
-
-- Application errors.
-- Validation failures.
-- Authentication and authorization events.
-- API activity.
-- Detection processing errors.
-- Response execution results.
-
-Sensitive information should not be unnecessarily written to application logs.
-
-### Metrics and Observability
-
-Prometheus will be used to collect relevant system and application metrics, while Grafana can provide dashboards for monitoring those metrics.
-
-OpenTelemetry may be used to collect application telemetry such as traces, metrics, and logs where required.
-
-### Monitoring Dashboard
-
-The monitoring interface will provide visibility into:
-
-- System health.
-- API activity.
-- Detection activity.
-- Alert activity.
-- Response activity.
-- Important application metrics.
-
-The security dashboard and system monitoring views will be developed according to the actual requirements of the implemented components.
-
-### Logging and Retention
-
-Logs and security records will be stored according to their purpose and required retention period.
-
-The system will avoid storing unnecessary data and will apply appropriate access controls to logs containing security-related information.
-
-### Development Approach
-
-Monitoring and logging will initially focus on the core application, detection pipeline, alerts, and response workflow.
-
-Additional observability components will be introduced when they provide a clear benefit to system operation, troubleshooting, or security investigation.
-
-## Security Design
-
-CyberShield-Auto will include security controls to protect the application, API, database, security data, and system components.
-
-Security will be considered throughout the development process rather than being added only after the main functionality is completed.
-
-### Authentication and Authorization
-
-The system will use authentication to verify the identity of users accessing protected resources.
-
-Authorization will control what authenticated users are permitted to access or modify.
-
-Access to sensitive operations and security information will be restricted according to defined permissions.
-
-### API Security
-
-The FastAPI backend will apply appropriate security controls to protect API endpoints.
-
-These controls may include:
-
-- Authentication and authorization.
-- Input validation.
-- Request size limits.
-- Rate limiting where required.
-- Secure error handling.
-- Protection of sensitive information.
-- API versioning.
-- Security logging.
-
-The frontend will not directly access protected database resources.
-
-### Data Protection
-
-Sensitive configuration values such as database credentials, API keys, and authentication secrets will not be stored directly in source code.
-
-Environment configuration will be used to provide sensitive values to the application.
-
-Security-related data will be protected through appropriate access controls and database permissions.
-
-### Input Validation
-
-Incoming data will be validated before it is processed by the application.
-
-Pydantic will be used for API request validation, while additional validation and preprocessing will be applied where required by the data source.
-
-Untrusted external data will not be assumed to be safe.
-
-### Secure Error Handling
-
-The application will return controlled error responses without exposing sensitive implementation details such as:
-
-- Internal file paths.
-- Database credentials.
-- Stack traces.
-- Internal system information.
-
-Detailed errors may be recorded in protected application logs for debugging.
-
-### Security Logging
-
-Important security events will be logged to support investigation and auditing.
-
-These may include:
-
-- Authentication events.
-- Authorization failures.
-- Significant API activity.
-- Detection events.
-- Alert generation.
-- Response actions.
-- Configuration or security-related changes.
-
-### Dependency and Application Security
-
-Project dependencies will be managed and reviewed during development.
-
-The application will follow relevant secure-development practices and consider guidance from OWASP application and API security standards.
-
-### Security Development Approach
-
-Security controls will be implemented incrementally alongside the corresponding application components.
-
-The initial focus will be on authentication, authorization, input validation, secure configuration, protected database access, and secure API behavior.
-
-Additional security controls will be introduced when required by the system architecture and deployment environment.
-
-## Testing and Evaluation
-
-CyberShield-Auto will use automated testing and model evaluation to verify that the system works correctly and that the threat detection models provide reliable results.
-
-Testing will cover individual components as well as the complete detection and response workflow.
-
-### Application Testing
-
-Automated tests will be used to verify important application components, including:
-
-- API endpoints.
-- Data validation.
-- Preprocessing.
-- Feature engineering.
-- Threat detection.
-- Risk scoring.
-- Alert generation.
-- Response logic.
-
-Python components will be tested using `pytest`, while frontend components can be tested using React Testing Library.
-
-### API Testing
-
-The API will be tested to verify:
-
-- Valid requests.
-- Invalid input.
-- Authentication and authorization behavior.
-- Expected response formats.
-- HTTP status codes.
-- Error handling.
-- Protected endpoints.
-
-### Machine Learning Evaluation
-
-Machine learning models will be evaluated using security-relevant metrics rather than accuracy alone.
-
-The evaluation may include:
-
-- Precision.
-- Recall.
-- F1-score.
-- ROC-AUC.
-- PR-AUC.
-- Confusion matrix.
-- False-positive rate.
-- False-negative rate.
-- Inference time.
-
-### Data Leakage and Evaluation Safety
-
-The machine learning evaluation process will consider potential sources of data leakage.
-
-Training and testing data will be separated appropriately, and preprocessing steps will be designed to avoid using information from the test set during training.
-
-Class imbalance, duplicate records, feature leakage, and temporal leakage will also be considered where relevant.
-
-### Detection Evaluation
-
-The detection system will be evaluated using test data containing known classifications or labels where available.
-
-The evaluation will examine how effectively the system identifies potentially suspicious events while considering false positives and false negatives.
-
-### Response Testing
-
-Response rules will be tested using controlled test scenarios.
-
-Potentially impactful automated response actions will first be tested in authorized environments to prevent unintended effects on external systems.
-
-### System Integration Testing
-
-Integration testing will verify the flow between major components:
-
-```text
-Data Input
-    ↓
-Validation
-    ↓
-Preprocessing
-    ↓
-Threat Detection
-    ↓
-Risk Scoring
-    ↓
-Alert Generation
-    ↓
-Response
-    ↓
-Database / Monitoring
-```
-
-### Evaluation Approach
-
-Testing and evaluation will be performed throughout development rather than only at the end of the project.
-
-Model performance, application behavior, false positives, false negatives, and system reliability will be reviewed before components are considered ready for deployment.
-
-## Deployment
-
-CyberShield-Auto will be deployed using a modular architecture that separates the frontend, backend API, database, machine learning components, and supporting services.
-
-The deployment approach will focus on reproducibility, security, and maintainability.
-
-### Deployment Components
-
-The main deployment components will include:
-
-- **React Frontend:** Provides the web-based dashboard.
-- **FastAPI Backend:** Provides the application API and coordinates system operations.
-- **PostgreSQL:** Stores application and security-related data.
-- **ML Components:** Provide trained models for threat detection.
-- **Monitoring Components:** Provide application and system monitoring where required.
-
-### Containerization
-
-Docker will be used to create reproducible environments for application components.
-
-Containers may be used for the frontend, backend, database, and other supporting services when appropriate.
-
-### Environment Configuration
-
-Development, testing, and production environments will use separate configuration values where required.
-
-Sensitive configuration such as database credentials, API keys, and authentication secrets will be provided through environment configuration rather than being stored in source code.
-
-### Deployment Workflow
-
-The general deployment workflow will be:
-
-```text
-Source Code
-     ↓
-Testing
-     ↓
-Build
-     ↓
-Docker Image
-     ↓
-Deployment Environment
-     ↓
-Application Services
-     ↓
-Monitoring
-```
-
-### CI/CD
-
-GitHub Actions may be used to automate development workflows such as:
-
-- Running automated tests.
-- Checking code quality.
-- Building application components.
-- Building Docker images.
-- Preparing deployment artifacts.
-
-Deployment automation will be introduced incrementally as the project becomes ready for deployment.
-
-### Production Deployment
-
-For an initial deployment, the system can be deployed using Docker on a suitable Linux environment.
-
-Kubernetes may be introduced later if the system requires container orchestration, scaling, service management, or higher deployment complexity.
-
-Infrastructure automation using Terraform will be considered when infrastructure needs to be managed consistently across environments.
-
-### Deployment Security
-
-Deployment environments will use appropriate security controls, including:
-
-- Restricted access to application services.
-- Protected database access.
-- Secure handling of secrets.
-- HTTPS for external communication where required.
-- Updated application dependencies and container images.
-- Monitoring of application and infrastructure health.
-
-### Deployment Approach
-
-CyberShield-Auto will first be developed and tested locally.
-
-After the core system is stable, containerized deployment will be introduced. More advanced deployment infrastructure such as Kubernetes and Terraform will only be added when there is a clear requirement for them.
-
-## Development Roadmap / Future Scope
-
-CyberShield-Auto will be developed incrementally, with the core detection pipeline implemented and evaluated before introducing additional infrastructure and advanced capabilities.
-
-### Development Roadmap
-
-The planned development sequence is:
-
-```text
-Project Setup
-      ↓
-Data Collection
-      ↓
-Data Validation and Preprocessing
-      ↓
-Feature Engineering
-      ↓
-Threat Detection
-      ↓
-Model Evaluation
-      ↓
-Threat Scoring
-      ↓
-Alert and Response
-      ↓
-Database Integration
-      ↓
-API Development
-      ↓
-Monitoring and Dashboard
-      ↓
-Testing
-      ↓
-Deployment
-```
-
-Each stage will be implemented and tested before moving to the next major stage.
-
-### Future Scope
-
-Future development may include:
-
-- Integration with additional security data sources.
-- Additional threat detection models.
-- Improved anomaly detection.
-- Explainable machine learning using techniques such as SHAP.
-- Integration with Zeek or Suricata telemetry.
-- Threat intelligence integration.
-- More advanced alert correlation.
-- Additional controlled response actions.
-- Advanced monitoring and observability.
-- Scalable event processing using Kafka when required.
-- Expanded deployment infrastructure using Kubernetes and Terraform when justified.
-
-Future features will be introduced based on actual project requirements rather than adding unnecessary complexity to the initial implementation.
-
-### Project Development Principle
-
-The project will prioritize a working, testable, and measurable core system before expanding into advanced capabilities.
-
-Each new component should provide a clear benefit to threat detection, analysis, response, monitoring, security, or system scalability.
+The project will prioritize evidence-based decisions, least privilege, restricted automation, clear audit records, and reproducible testing. New capabilities will be introduced as their requirements, implementation, and security controls are verified.
