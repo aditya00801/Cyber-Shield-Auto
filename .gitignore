@@ -48,5 +48,7 @@ build/
 dist/
 *.egg-info/
 
-# Agent
-.agent
+# Ignore Antigravity local files by default
+.agent/*
+!.agent/workflows/
+!.agent/workflows/*.md
