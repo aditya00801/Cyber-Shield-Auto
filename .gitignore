@@ -47,3 +47,6 @@ temp/
 build/
 dist/
 *.egg-info/
+
+# Agent
+.agent
