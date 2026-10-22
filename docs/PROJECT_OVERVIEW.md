@@ -298,31 +298,39 @@ The dashboard should distinguish detections from actions that have actually been
 
 ## 7. Proposed system architecture
 
-CyberShield-Auto will initially use a modular Python architecture. The components may run within one application rather than as separate services.
+CyberShield-Auto uses a decoupled architecture separating the user interface from backend application services.
 
 The main components are:
 
-| Component           | Responsibility                                  |
-| ------------------- | ----------------------------------------------- |
-| Monitoring          | Collects events from supported sources          |
-| Event processing    | Validates and normalizes data                   |
-| Detection engine    | Evaluates rules and produces findings           |
-| Investigation       | Gathers evidence and correlates events          |
-| Risk assessment     | Evaluates severity, confidence, and impact      |
-| Policy engine       | Determines which actions are permitted          |
-| Response executor   | Performs approved operations                    |
-| Verification        | Checks action outcomes                          |
-| Incident management | Maintains incident state and history            |
-| Alerting            | Communicates detections and response outcomes   |
-| Storage             | Persists incidents, findings, and audit records |
-| API and dashboard   | Exposes authorized operations and information   |
-| AI integration      | Provides optional investigation summaries       |
+| Component                 | Responsibility                                              |
+| ------------------------- | ----------------------------------------------------------- |
+| Monitoring                | Collects events from supported sources                      |
+| Event processing          | Validates and normalizes data                               |
+| Detection engine          | Evaluates rules and produces findings                       |
+| Investigation             | Gathers evidence and correlates events                      |
+| Risk assessment           | Evaluates severity, confidence, and impact                  |
+| Policy engine             | Determines which actions are permitted                      |
+| Response executor         | Performs approved operations                                |
+| Verification              | Checks action outcomes                                      |
+| Incident management       | Maintains incident state and history                        |
+| Alerting                  | Communicates detections and response outcomes               |
+| Storage                   | Persists incidents, findings, and audit records             |
+| Backend REST API (FastAPI)| Exposes structured endpoints and enforces security policies |
+| Frontend Dashboard (React)| Displays alerts, investigations, findings, and status       |
+| AI integration            | Provides optional investigation summaries                   |
 
 The expected processing flow is:
 
-**Monitoring → Event processing → Detection → Investigation → Risk assessment → Policy evaluation → Response → Verification → Alerting and incident updates**
+**Monitoring → Event processing → Detection → Investigation → Risk assessment → Policy evaluation → Response → Verification → Storage and alerts → Backend REST API → Frontend Dashboard**
 
 Not every event will require every stage. The implementation may close low-risk events without further investigation when the configured rules support that decision.
+
+### Frontend and Backend Separation
+
+The system divides responsibilities between two distinct tiers:
+
+1. **Frontend tier (React, TypeScript, Tailwind CSS):** Renders the security dashboard, incident investigation views, alerts list, risk indicators, response status, audit trails, and system settings. The frontend communicates with the backend exclusively via documented REST APIs. Real-time alert streaming options (such as Server-Sent Events or WebSocket) remain under evaluation and are not confirmed design decisions. The frontend client does not receive direct operating-system access.
+2. **Backend tier (Python, FastAPI, Pydantic):** Executes all security event intake, request validation, rule evaluation, forensic analysis, policy enforcement, restricted response execution, verification checks, and persistent storage. All access controls and security constraints are enforced on the backend.
 
 ## 8. AI integration
 
@@ -367,23 +375,27 @@ These requirements will be developed further in the dedicated security and respo
 
 ## 10. Proposed technology stack
 
-The initial technology choices are provisional.
+The initial technology choices reflect the intended architecture:
 
-| Technology               | Intended use                                        |
-| ------------------------ | --------------------------------------------------- |
-| Python                   | Core application logic                              |
-| Pydantic                 | Validation of events, findings, and action requests |
-| FastAPI                  | Backend API                                         |
-| SQLite                   | Initial local database                              |
-| Streamlit                | Initial dashboard                                   |
-| pytest                   | Automated testing                                   |
-| scikit-learn             | Possible machine-learning experiments               |
-| Git                      | Version control                                     |
-| Windows event interfaces | Collection of supported endpoint events             |
+| Technology               | Layer / Component     | Intended use                                        |
+| ------------------------ | --------------------- | --------------------------------------------------- |
+| React                    | Frontend              | Security dashboard and client interface             |
+| TypeScript               | Frontend              | Type-safe frontend client logic                     |
+| Tailwind CSS             | Frontend styling      | Dashboard layout and interface styling              |
+| Python                   | Backend               | Core application logic and detection services       |
+| FastAPI                  | Backend API           | REST API endpoints and request routing              |
+| Pydantic                 | Validation            | Validation of events, findings, and action requests |
+| REST APIs                | Communication         | Frontend and backend communication interface        |
+| pandas                   | Data processing       | Tabular data inspection and dataset handling        |
+| NumPy                    | Numerical computation | Array and numerical operations                      |
+| scikit-learn             | Machine learning      | Planned detection experiments and model evaluation  |
+| CICIDS2017               | Benchmark dataset     | Network intrusion detection evaluation data         |
+| SQLite                   | Data storage          | Initial local database                              |
+| pytest                   | Testing               | Automated unit, integration, and security tests     |
+| Git                      | Version control       | Source-code version control                         |
+| Windows event interfaces | Telemetry             | Collection of supported endpoint events             |
 
-CICIDS2017 will provide data for network intrusion detection experiments.
-
-The final dependencies and operating-system interfaces will be selected after the requirements are confirmed. Unnecessary dependencies should be avoided.
+The repository currently contains a basic FastAPI prototype in `src/api/`. The React frontend is a planned component. Final dependencies and operating-system interfaces will be confirmed as implementation proceeds.
 
 ## 11. Data management and privacy
 

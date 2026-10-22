@@ -1,4 +1,4 @@
-﻿# CyberShield-Auto Development Roadmap
+# CyberShield-Auto Development Roadmap
 
 ## 1. Document information
 
@@ -782,57 +782,55 @@ The API exposes only documented operations and enforces the required validation 
 
 Commit the tested API.
 
-## 19. Phase 13: Dashboard and alerting
+## 19. Phase 13: Frontend dashboard and alerting
 
 ### Objective
 
-Give users a clear view of incidents, evidence, system status, and response outcomes.
+Build a decoupled web frontend using React, TypeScript, and Tailwind CSS to give users an interactive interface for monitoring incidents, telemetry evidence, system status, and response outcomes over REST APIs.
 
 ### Prerequisites
 
-Incident storage and the required application interfaces must be available.
+Phase 11 (Storage and audit records) and Phase 12 (FastAPI backend) must be available and verified.
 
 ### Tasks
 
-1. Review the dashboard requirements.
-2. Define the main monitoring view.
-3. Display incident counts and severity.
-4. Display incident details and supporting evidence.
-5. Show investigation status.
-6. Show response authorization and execution status.
-7. Show verification results.
-8. Add incident history and filtering.
-9. Display monitoring-source health.
-10. Display the current response mode.
-11. Display emergency-stop status.
-12. Handle API and storage failures visibly.
-13. Add interface tests where practical.
-14. Check that sensitive information is not exposed unnecessarily.
+1. Review `docs/PROJECT_REQUIREMENTS.md` (FR-022, FR-023, INT-002) and `docs/API_SPECIFICATION.md`.
+2. Initialize the React client application using TypeScript and Tailwind CSS.
+3. Implement API client services for backend REST endpoints (`/health`, `/detections`, `/incidents`, `/audit/records`).
+4. Build the primary security dashboard overview with status indicators and metric cards.
+5. Implement incident list and filtering views with severity and status indicators.
+6. Build detailed incident investigation views displaying evidence telemetry and detection context.
+7. Implement response status displays and policy decision audits.
+8. Add emergency-stop controls and response-mode indicators.
+9. Handle API connection errors, timeouts, and validation errors gracefully in the UI.
+10. Verify that the frontend contains no direct operating-system execution capabilities.
+11. Evaluate optional Server-Sent Events (SSE) or WebSocket integration for live alert streaming.
+12. Add client-side unit and component tests.
 
 ### Expected deliverables
 
-* Monitoring dashboard.
-* Incident details view.
-* Incident history.
-* Visible response-mode and health indicators.
-* Alert-status updates.
+* Standalone React + TypeScript web frontend application.
+* Tailwind CSS styling and responsive dashboard layout.
+* Typed REST API client layer.
+* Incident investigation and alert views.
+* Emergency-stop and response status displays.
 
 ### Tests
 
-* New incidents appear in the interface.
-* Status changes are represented accurately.
-* Unverified incidents are not labelled resolved.
-* API failures are displayed.
-* Emergency-stop status is visible.
-* Access restrictions are respected.
+* Dashboard renders incident lists and health indicators correctly from mock or live API data.
+* Status changes (detected, investigating, responding, verified) display accurately.
+* Unverified incidents are never marked resolved.
+* API disconnections and backend errors are clearly indicated.
+* Emergency-stop state is prominent and up to date.
+* Client-side tests verify that no OS commands or raw scripts can be issued from the interface.
 
 ### Acceptance criteria
 
-Users can understand what was detected, what evidence exists, whether an action was authorized, and whether the result was verified.
+Users can inspect detections, review forensic evidence, track response policy decisions, and verify remediation outcomes through a responsive React interface communicating with the backend via REST APIs.
 
 ### Git milestone
 
-Commit the tested dashboard and alerting integration.
+Commit the tested React frontend dashboard and alerting integration.
 
 ## 20. Phase 14: AI-assisted investigation
 

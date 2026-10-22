@@ -63,7 +63,7 @@ The primary objectives are to:
 6. Evaluate proposed response actions through an independent policy engine.
 7. Support controlled response execution and post-action verification.
 8. Maintain structured incident records and audit logs.
-9. Provide an API and, later, a dashboard for monitoring and investigation.
+9. Provide a backend REST API and, later, a dedicated web dashboard for monitoring and investigation.
 10. Evaluate detection behavior using appropriate datasets, synthetic events, and security-focused tests.
 
 These objectives describe the intended system. Each capability must be implemented and verified before it can be considered complete.
@@ -83,8 +83,8 @@ The following capabilities define the intended direction of development.
 | Response executor         | Perform only explicitly permitted defensive actions.                                    |
 | Response verification     | Check and record whether an authorized action achieved its intended result.             |
 | Storage and audit         | Maintain incident history and records of important decisions and actions.               |
-| API                       | Expose selected functionality through a structured application interface.               |
-| Alerting and dashboard    | Present findings and investigation information to the user.                             |
+| Backend REST API          | Expose selected functionality through structured, validated HTTP endpoints.             |
+| Security dashboard        | Present findings, incident records, and response status to the user.                    |
 | AI-assisted investigation | Help summarize evidence and explain findings without independently authorizing actions. |
 
 These features are planned capabilities, not a claim that every component is currently implemented.
@@ -118,37 +118,52 @@ Restricted Response Executor
 Outcome Verification
           |
           v
-Incident Records, Audit Logs and Alerts
+Incident Records, Storage, Audit Logs, and Alerts
           |
           v
-API and Dashboard
+Backend REST API (FastAPI)
+          |
+          v
+Frontend Security Dashboard (React + TypeScript)
 ```
 
 The diagram describes the planned architecture. The complete end-to-end pipeline has not yet been implemented.
 
-Each component should have a clearly defined responsibility. In particular, the detection engine must not independently authorize disruptive actions, and AI-generated recommendations must remain subject to the same policy controls as other proposed actions.
+### Frontend and Backend Separation
+
+The system divides responsibilities between a Python backend service and a decoupled web frontend:
+
+* **Frontend (React, TypeScript, Tailwind CSS):** A dedicated client application providing the security dashboard, incident investigation views, alert feeds, risk summaries, response audit records, and configuration interfaces. The frontend communicates with the backend exclusively through documented REST APIs. Optional real-time updates via Server-Sent Events (SSE) or WebSocket remain an architectural consideration subject to formal evaluation.
+* **Backend (Python, FastAPI, Pydantic):** Core services responsible for event intake, data validation, rule-based threat detection, forensic investigation, risk scoring, response policy evaluation, restricted action execution, outcome verification, and audit logging.
+
+### Security and Authority Boundaries
+
+The frontend interface must never receive unrestricted operating-system access. All authorization, policy enforcement, target validation, and privileged operations are executed and verified strictly within the backend. AI-assisted investigation components provide advisory summaries only; they cannot independently authorize, alter, or execute defensive response actions.
 
 ## Technology Stack
 
 The project is being developed around the following technologies:
 
-| Technology     | Intended role                                    |
-| -------------- | ------------------------------------------------ |
-| Python         | Primary programming language                     |
-| FastAPI        | Backend API                                      |
-| Pydantic       | Data validation and structured schemas           |
-| Uvicorn        | Local ASGI server                                |
-| pandas         | Dataset inspection and processing                |
-| NumPy          | Numerical operations                             |
-| scikit-learn   | Machine-learning experiments and evaluation      |
-| CICIDS2017     | Network intrusion-detection evaluation dataset   |
-| pytest         | Planned automated testing                        |
-| SQLite         | Planned local data storage                       |
-| Streamlit      | Planned dashboard                                |
-| Git and GitHub | Version control and source-code hosting          |
-| Antigravity    | Development environment and AI-assisted workflow |
+| Technology     | Layer / Component          | Intended role                                    |
+| -------------- | -------------------------- | ------------------------------------------------ |
+| React          | Frontend                   | Planned client interface and security dashboard  |
+| TypeScript     | Frontend                   | Type-safe frontend application logic             |
+| Tailwind CSS   | Frontend styling           | Utility-first dashboard styling                  |
+| Python         | Backend                    | Core application services and detection logic    |
+| FastAPI        | Backend API                | REST API endpoints and routing                   |
+| Pydantic       | Validation                 | Structured request and response data validation  |
+| Uvicorn        | ASGI server                | Local asynchronous server                        |
+| REST APIs      | Communication              | Documented frontend and backend communication    |
+| pandas         | Data processing            | Dataset inspection and tabular data handling     |
+| NumPy          | Numerical computation      | Array operations and feature matrices            |
+| scikit-learn   | Machine learning           | Planned detection experiments and evaluation     |
+| CICIDS2017     | Benchmark dataset          | Network intrusion-detection evaluation dataset   |
+| SQLite         | Data storage               | Proposed initial local database                  |
+| pytest         | Testing                    | Automated unit, integration, and security tests  |
+| Git and GitHub | Source control             | Version control and collaboration                |
+| Antigravity    | Development environment    | AI-assisted development workflow                 |
 
-The final dependency versions and installation commands must be confirmed against the repository's configuration before deployment.
+The repository currently contains a basic FastAPI prototype in `src/api/`. The React and TypeScript frontend is a planned component that has not yet been implemented. Dependency versions and environment configurations must be confirmed against the repository configuration before deployment.
 
 ## Dataset
 
@@ -353,7 +368,7 @@ Development will proceed in stages:
 7. Implement an independent response policy engine.
 8. Add restricted response execution and outcome verification.
 9. Integrate storage, audit logging, and alerting.
-10. Expand the API and build the dashboard.
+10. Expand the backend REST API and build the React frontend dashboard.
 11. Integrate advisory AI assistance where appropriate.
 12. Perform integration, regression, and security testing.
 13. Document limitations and evaluate the completed prototype.

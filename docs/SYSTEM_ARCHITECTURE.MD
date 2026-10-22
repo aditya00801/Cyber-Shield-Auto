@@ -94,15 +94,22 @@ This will make future Linux support easier to introduce.
 
 # 3. High-Level Architecture
 
-The system is organized into seven logical layers.
+The system is organized into logical tiers separating the web frontend from backend application services.
 
 ```text
 +-------------------------------------------------------+
-|                   USER INTERFACE                      |
+|        FRONTEND CLIENT (React + TypeScript)           |
 |                                                       |
-|              Security Dashboard                       |
-|              Real-Time Alerts                          |
-|              Incident History                          |
+|       Security Dashboard    | Alert & Incident Views  |
+|       Investigation Views   | Configuration & Status  |
++--------------------------+----------------------------+
+                           |
+                           v  REST APIs (HTTP / JSON)
++-------------------------------------------------------+
+|           BACKEND API LAYER (FastAPI)                 |
+|                                                       |
+|       Schema Validation (Pydantic) | Access Control   |
+|       API Endpoint Handlers | Error Normalization     |
 +--------------------------+----------------------------+
                            |
                            v
@@ -451,24 +458,41 @@ SQLite is proposed for the initial local implementation.
 
 The database layer should expose application-level interfaces so that the storage technology can be replaced later without rewriting the detection and response engines.
 
-## 4.12 Dashboard
+## 4.12 Dashboard Frontend
 
-**Responsibility:** Present the system's security state to the user.
+**Responsibility:** Present the system's security state, alerts, and investigation evidence to the user.
 
-The dashboard should display:
+The frontend is a dedicated web application implemented using React, TypeScript, and Tailwind CSS. It communicates with backend services exclusively through structured REST APIs.
 
-* Current monitoring status.
-* Recent detections.
-* Incident severity.
-* Investigation findings.
-* Response decisions.
-* Action execution status.
-* Verification results.
-* Incident history.
-* Component health.
-* Current automated-response mode.
+The dashboard displays:
 
-The interface must clearly distinguish detected threats from verified remediation outcomes.
+* Current monitoring status and health indicators.
+* Recent threat detections and supporting telemetry evidence.
+* Incident severity, confidence scores, and lifecycle status.
+* Forensic investigation findings and related event graphs.
+* Response policy recommendations and decisions.
+* Action execution status and verification results.
+* Searchable and filterable incident history.
+* Current automated-response mode and emergency-stop controls.
+
+### Architectural and Security Constraints
+
+* The frontend must never receive direct operating-system access.
+* The frontend consumes data through documented REST APIs; client-side checks do not replace backend authorization.
+* Real-time alerting mechanisms such as Server-Sent Events (SSE) or WebSocket remain under evaluation and are not confirmed decisions. Polling the incident and alert REST endpoints is the baseline mechanism.
+* The interface must clearly distinguish detected threats from verified remediation outcomes.
+
+## 4.13 Backend API Layer
+
+**Responsibility:** Expose application endpoints, validate requests and responses, and enforce access controls.
+
+The API layer is built using Python, FastAPI, and Pydantic:
+
+* Validates request payloads and query parameters using strict Pydantic schemas.
+* Provides REST endpoints for event intake, detection results, incident management, policy decisions, and system status.
+* Enforces backend authorization and access restrictions before dispatching requests to core services.
+* Formats error responses consistently without exposing internal paths or credentials.
+* Logs API operations for auditability.
 
 ---
 
@@ -929,10 +953,19 @@ CyberShield-Auto/
 │   ├── SECURITY_REQUIREMENTS.md
 │   ├── TESTING_STRATEGY.md
 │   ├── DEVELOPMENT_ROADMAP.md
-│   ├── DEPLOYMENT_GUIDE.md
+│   ├── DEVELOPMENT_GUIDE.md
+│   ├── DEPLOYMENT_GUIDE.md (planned)
 │   └── ARCHITECTURAL_DECISION_LOG.md
 │
-├── src/
+├── frontend/                     # Planned React + TypeScript client application
+│   ├── public/
+│   ├── src/
+│   │   ├── components/           # Dashboard widgets, tables, and alerts
+│   │   ├── pages/                # Incident views, investigation, and settings
+│   │   └── services/             # REST API client services
+│   └── package.json
+│
+├── src/                          # Backend Python application
 │   └── cybershield/
 │       ├── monitoring/
 │       ├── events/
@@ -945,8 +978,7 @@ CyberShield-Auto/
 │       ├── incidents/
 │       ├── alerts/
 │       ├── storage/
-│       ├── api/
-│       └── dashboard/
+│       └── api/
 │
 └── tests/
     ├── unit/
@@ -957,24 +989,25 @@ CyberShield-Auto/
 
 Directory names are provisional and will be refined before implementation begins.
 
-# 16. Architectural Decisions Requiring Confirmation
+# 16. Architectural Decisions
 
-The following decisions remain open.
+The architectural decisions are summarized below and formally logged in `docs/ARCHITECTURAL_DECISION_LOG.md`.
 
-| Decision               | Initial proposal           | Status                     |
-| ---------------------- | -------------------------- | -------------------------- |
-| Deployment             | Single Windows computer    | Proposed                   |
-| Architecture           | Modular Python application | Proposed                   |
-| Detection              | Deterministic rules first  | Proposed                   |
-| Storage                | SQLite                     | Proposed                   |
-| Dashboard              | Streamlit                  | Proposed                   |
-| API                    | FastAPI where required     | Proposed                   |
-| AI                     | Optional assistance layer  | Proposed                   |
-| Response authorization | Independent policy engine  | Required design constraint |
-| Event processing       | Bounded local pipeline     | Proposed                   |
-| Multi-computer support | Future extension           | Deferred                   |
+| Decision               | Selection / Status                  | Rationale                                                     |
+| ---------------------- | ----------------------------------- | ------------------------------------------------------------- |
+| Deployment             | Single Windows computer (Proposed)  | Initial focus on controlled local endpoint environment         |
+| Architecture           | Decoupled frontend and backend      | Clean separation of UI from backend security services         |
+| Frontend dashboard     | React + TypeScript + Tailwind CSS   | Interactive, component-based security monitoring interface    |
+| Backend API            | FastAPI + Pydantic (Approved)       | High-performance, schema-validated REST APIs                  |
+| API communication      | REST APIs (Approved)                | Standardized JSON over HTTP; real-time (SSE/WS) under review  |
+| Detection              | Deterministic rules first (Proposed)| Explainable, verifiable findings with explicit evidence       |
+| Storage                | SQLite (Proposed initial)           | Lightweight local persistence; abstracted interface           |
+| AI assistance          | Advisory-only layer (Approved)      | Summarizes evidence; strictly barred from executing actions   |
+| Response authorization | Independent policy engine (Required)| Enforces least-privilege, dry-run simulation, and allowlists  |
+| Event processing       | Bounded local pipeline (Proposed)   | Predictable resource usage on monitored host                  |
+| Multi-computer support | Future extension (Deferred)         | Scope confined to single endpoint for initial prototype       |
 
-These decisions should be recorded in `docs/ARCHITECTURAL_DECISION_LOG.md` when approved.
+These decisions are recorded in `docs/ARCHITECTURAL_DECISION_LOG.md`.
 
 # 17. Architecture Acceptance Criteria
 

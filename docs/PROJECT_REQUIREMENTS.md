@@ -724,7 +724,15 @@ The monitoring component MUST use documented interfaces appropriate to the suppo
 
 ### INT-002: Dashboard integration
 
-The dashboard MUST receive incident updates through a documented interface.
+The dashboard MUST receive incident updates and system telemetry through documented REST API endpoints exposed by the FastAPI backend.
+
+Acceptance criteria:
+
+* The dashboard is implemented as a standalone web frontend using React, TypeScript, and Tailwind CSS.
+* All data retrieval (incident lists, detailed investigation findings, alert notifications, and response records) occurs over documented HTTP REST endpoints.
+* Real-time notifications via Server-Sent Events (SSE) or WebSocket remain optional design alternatives under evaluation; polling is the default supported mechanism.
+* The frontend client does NOT receive direct operating-system access, execution privileges, or filesystem write access.
+* The backend MUST enforce all authorization, rate limiting, and request validation; frontend checks cannot substitute for backend security controls.
 
 ### INT-003: Storage integration
 

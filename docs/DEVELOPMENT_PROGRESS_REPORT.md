@@ -15,23 +15,26 @@
 CyberShield-Auto is planned as a modular defensive cybersecurity application designed for Windows endpoint monitoring, rule-based threat detection, incident investigation, risk assessment, and controlled response actions.
 
 ### Documented Scope & Planned Architecture
+* **Frontend Architecture:** Decoupled web client built with React, TypeScript, and Tailwind CSS, communicating exclusively via documented REST APIs with backend services.
+* **Backend Services:** Python, FastAPI, and Pydantic services responsible for event intake, data validation, rule-based threat detection, risk assessment, and policy-controlled response execution.
 * **Endpoint Telemetry:** Ingestion and normalization of Windows security events, process tracking, file operations, and network activity.
 * **Threat Detection:** A deterministic, rule-based detection engine paired with offline network intrusion detection evaluation based on the CICIDS2017 benchmark dataset.
-* **Controlled Defensive Response:** An automated policy engine supporting allowlisted, reversible actions (e.g., process termination, firewall rules) operating strictly under least-privilege, dry-run simulation, and emergency-stop guardrails.
+* **Controlled Defensive Response:** An automated policy engine supporting allowlisted, reversible actions operating strictly under least-privilege, dry-run simulation, and emergency-stop guardrails.
 * **Advisory AI Assistance:** An AI investigation layer designed solely to explain detections and summarize forensic evidence, strictly forbidden from autonomously authorizing or executing defensive responses.
 
 ---
 
 ## 3. Documentation Status
 
-A comprehensive documentation overhaul was established in commit `40cec5f`. The repository currently maintains 16 primary specification and planning documents under `docs/`:
+A comprehensive documentation overhaul was established in commit `40cec5f` and refined to establish the decoupled React frontend and FastAPI backend architecture:
 
 | Document | Role & Description | Status |
 | :--- | :--- | :--- |
+| `README.md` | Primary project overview, architecture, tech stack, and development guide. | Complete |
 | `docs/PROJECT_OVERVIEW.md` | High-level system architecture, problem statement, and capabilities. | Complete |
 | `docs/PROJECT_REQUIREMENTS.md` | Functional, non-functional, security, and interface requirements. | Complete |
 | `docs/SYSTEM_ARCHITECTURE.MD` | Subsystem definitions, module boundaries, data flows, and component interactions. | Complete |
-| `docs/DEVELOPMENT_ROADMAP.md` | Phased development plan (Phases 0 through 12) with verification milestones. | Complete |
+| `docs/DEVELOPMENT_ROADMAP.md` | Phased development plan (Phases 0 through 14) with verification milestones. | Complete |
 | `docs/DEVELOPMENT_GUIDE.md` | Developer onboarding, environment setup, testing layout, and code conventions. | Complete |
 | `docs/SECURITY_REQUIREMENTS.md` | Mandatory security constraints, authorization boundaries, and credential safety. | Complete |
 | `docs/THREAT_MODEL.md` | Threat analysis, attacker models, STRIDE evaluation, and mitigation design. | Complete |
@@ -42,8 +45,8 @@ A comprehensive documentation overhaul was established in commit `40cec5f`. The 
 | `docs/ALERTING_AND_MONITORING.md` | Alert severity levels, operational health metrics, and monitoring design. | Complete |
 | `docs/AI_AGENT_DESIGN.md` | Specifications for the advisory-only AI investigation assistant. | Complete |
 | `docs/DATASET.md` | CICIDS2017 dataset documentation, evaluation guidelines, and leakage prevention. | Complete |
-| `docs/API_SPECIFICATION.md` | REST API endpoint outlines and request/response specifications. | Outline / Draft |
-| `docs/ARCHITECTURAL_DECISION_LOG.md` | Architecture Decision Records (ADRs) tracking structural choices. | Outline / Draft |
+| `docs/API_SPECIFICATION.md` | Formal REST API endpoint definitions, request/response schemas, and access controls. | Complete |
+| `docs/ARCHITECTURAL_DECISION_LOG.md` | Architecture Decision Records (ADRs) tracking structural choices and technology decisions. | Complete |
 
 ---
 
@@ -57,8 +60,8 @@ $$\text{Inspect} \longrightarrow \text{Plan} \longrightarrow \text{Modify (One L
 
 ### Key Policies
 * **Automatic Local Commits:** The agent is authorized to automatically commit completed and validated single logical changes without repetitive manual confirmation for routine actions.
-* **Strict Commit Boundaries:** Commits must represent a single coherent change (e.g., adding an event validator, updating a document). Blind staging (`git add .` or `git add -A`) is strictly prohibited.
-* **Conventional Commits:** Messages must adhere to `type(scope): concise description` (e.g., `feat`, `fix`, `docs`, `chore`, `test`).
+* **Strict Commit Boundaries:** Commits must represent a single coherent change. Blind staging (`git add .` or `git add -A`) is strictly prohibited.
+* **Conventional Commits:** Messages must adhere to `type(scope): concise description`.
 * **Push Separation:** Automatic pushing to GitHub is disabled by default; pushes require explicit authorization.
 * **Preservation of Unrelated Changes:** Existing user files, unstaged modifications, and untracked work outside the task scope must never be discarded or overwritten.
 
@@ -76,49 +79,10 @@ Repository inspection performed on 2026-10-22:
   * `07877d7` — `Set up project dependencies and documentation`
   * `6195753` — `chore: initialize CyberShield-Auto project`
 * **Remote Tracking:** Configured to `origin` (`https://github.com/aditya00801/Cyber-Shield-Auto`). The local `master` branch is verified to be up to date with `origin/master`.
-* **Working Tree State:**
-  * Modified (unstaged): `.gitignore`
-  * Untracked: `.agent/workflows/cybershield-development.md`, `docs/DEVELOPMENT_PROGRESS_REPORT.md`
 
 ---
 
-## 6. Changes in the Current Work Session
-
-The current work session includes the following changes:
-
-1. **`.gitignore` (Modified):**
-   * Configured selective exclusion for Antigravity directory:
-     ```gitignore
-     # Ignore Antigravity local files by default
-     .agent/*
-     !.agent/workflows/
-     !.agent/workflows/*.md
-     ```
-   * *Status:* Saved on disk; unstaged.
-
-2. **`.agent/workflows/cybershield-development.md` (Created):**
-   * Comprehensive development workflow definition governing incremental coding, automated Git safety, and quality checks.
-   * *Status:* Saved on disk; untracked.
-
-3. **`docs/DEVELOPMENT_PROGRESS_REPORT.md` (Created):**
-   * Formal development status audit tracking repository state, documentation, safety controls, and outstanding tasks.
-   * *Status:* Saved on disk; untracked.
-
----
-
-## 7. Validation Results
-
-| Check / Command | Target / Scope | Result | Notes |
-| :--- | :--- | :--- | :--- |
-| `git branch --show-current` | Current branch | `master` | Verified correct branch. |
-| `git status --short` | Working tree | Clean diff checks | Only intended files modified/untracked. |
-| `git diff --check` | Working copy | Passed (0 errors) | Zero whitespace issues or conflict markers. |
-| Secret Scanning | Repository files | Passed (0 secrets) | Scanned for passwords, API keys, and tokens. |
-| Code Tests (`pytest`) | Application code | **Not executed** | Test suite does not yet exist in repository. |
-
----
-
-## 8. Security and Safety Controls
+## 6. Security and Safety Controls
 
 The project implements defensive-first development controls:
 * **Detection-Only Default:** All automated detection mechanisms default to monitoring without executing external side-effects.
@@ -130,39 +94,20 @@ The project implements defensive-first development controls:
 
 ---
 
-## 9. Known Limitations and Outstanding Tasks
+## 7. Known Limitations and Outstanding Tasks
 
 The following limitations are confirmed by repository inspection:
-1. **Empty `README.md`:** The project root `README.md` is currently 0 bytes and needs project overview and quickstart instructions.
-2. **Missing Test Framework:** The `tests/` directory has not been created, and automated test runners (`pytest`) are not yet operational.
-3. **Skeleton API Implementation:** `src/api/` contains only an initial draft with `main.py` and `schemas.py`. Endpoints for threat detection, incident management, and health checks are not yet built.
-4. **Draft Outline Docs:** `docs/API_SPECIFICATION.md` and `docs/ARCHITECTURAL_DECISION_LOG.md` are currently minimal outlines that require detailed expansion.
-5. **No Telemetry Collectors:** Windows Event Log (ETW/Sysmon) adapters have not been implemented in source code.
-6. **Dataset Scripts Unformalized:** CICIDS2017 raw files exist in `data/raw/` and preliminary notebooks exist in `notebooks/`, but data pipelines have not yet been modularized into `src/`.
+1. **Planned Frontend:** The React + TypeScript client interface is planned and documented, but no frontend code directory has been created yet.
+2. **Skeleton API Implementation:** `src/api/` contains only an initial draft with `main.py` and `schemas.py`. Endpoints for detections, incident correlation, risk assessment, and emergency stop remain to be built.
+3. **Missing Automated Test Framework:** The `tests/` directory has not been created, and automated test runners (`pytest`) are not yet operational in the repository.
+4. **No Telemetry Collectors:** Windows Event Log (ETW/Sysmon) adapters have not been implemented in source code.
+5. **Dataset Scripts Unformalized:** CICIDS2017 raw files exist in `data/raw/` and preliminary notebooks exist in `notebooks/`, but data pipelines have not yet been modularized into `src/`.
 
 ---
 
-## 10. Recommended Next Steps
+## 8. Recommended Next Steps
 
-1. **Stage Current Work:**
-   Stage the updated configuration, workflow definition, and progress report:
-   ```powershell
-   git add .gitignore .agent/workflows/cybershield-development.md docs/DEVELOPMENT_PROGRESS_REPORT.md
-   ```
-2. **Review Staged Changes:**
-   Verify staged contents and formatting:
-   ```powershell
-   git diff --cached --check
-   git diff --cached --stat
-   ```
-3. **Commit Milestone:**
-   Create a conventional commit for the workflow and report:
-   ```powershell
-   git commit -m "docs(workflow): add development workflow and progress report"
-   ```
-4. **Verify Commit:**
-   Ensure clean commit creation with `git log -1 --oneline` and `git status --short`.
-5. **Push to Remote (Optional):**
-   When authorized, publish the commit to `origin/master`.
-6. **Proceed to Phase 1:**
-   Begin Phase 1 tasks by drafting the root `README.md`, initializing test structure under `tests/`, and creating initial unit tests for event schemas.
+1. **Verify Architectural Consistency:** Confirm that all documents and the major project synopsis reflect the React frontend and FastAPI backend without Streamlit references.
+2. **Review Working Copy:** Inspect diffs to ensure no unintended modifications or whitespace errors exist.
+3. **Maintain Commit Separation:** Present documentation corrections for user review prior to creating any Git commit.
+4. **Proceed to Implementation:** Initialize the test framework under `tests/` and expand event schemas.
